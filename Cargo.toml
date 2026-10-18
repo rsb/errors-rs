@@ -1,0 +1,26 @@
+[package]
+name = "rsb-errors"
+version = "0.1.0"
+edition = "2024"
+description = "Location, toggle and panic capture shared by every rsb Rust crate. See rules/standards/errors.md and panics.md."
+license = "MIT"
+repository = "https://github.com/rsb/errors-rs"
+publish = false
+
+[dependencies]
+snafu = "0.9"
+
+[lints.rust]
+unsafe_code = "forbid"
+unused_must_use = "deny"
+
+[lints.clippy]
+unwrap_used = "deny"
+get_unwrap = "deny"
+todo = "deny"
+unimplemented = "deny"
+missing_assert_message = "deny"
+manual_assert = "deny"
+missing_panics_doc = "deny"
+string_slice = "deny"
+exit = "deny"
