@@ -15,8 +15,8 @@
 //! }
 //! ```
 //!
-//! `{location}` prints nothing until the binary calls `show_locations(true)`,
-//! after which it prints ` (at file:line)`.
+//! `{location}` prints ` (at file:line)` by default. A binary that wants
+//! the line without locations calls `show_locations(false)`.
 //!
 //! The `check` feature adds [`check::run`], the repository checks of the
 //! standards' Check sections, for each consumer's `cargo xtask errors`.
@@ -28,11 +28,14 @@ use std::sync::atomic::{AtomicBool, Ordering};
 pub mod check;
 pub mod panic;
 
-static SHOW_LOCATIONS: AtomicBool = AtomicBool::new(false);
+static SHOW_LOCATIONS: AtomicBool = AtomicBool::new(true);
 
-/// Show ` (at file:line)` after each layer of every error line. A binary
-/// calls this once at startup from its `--debug` flag or
-/// `<APP>_ERROR_LOCATIONS` variable. Off by default.
+/// Whether every error line shows ` (at file:line)` after each layer. On
+/// by default: the reader of an error line wants the file and line the
+/// first time, without a second run. A binary calls `show_locations(false)`
+/// once at startup, from its `<APP>_ERROR_LOCATIONS=0` variable, for the
+/// places that want a stable string: a reply that goes into an agent
+/// record, a golden file.
 pub fn show_locations(on: bool) {
     SHOW_LOCATIONS.store(on, Ordering::Relaxed);
 }
@@ -68,8 +71,8 @@ impl snafu::GenerateImplicitData for Loc {
 }
 
 impl fmt::Display for Loc {
-    /// Prints ` (at file:line)` when locations are shown, and nothing
-    /// otherwise, so a display string can always say `"open raw{location}"`.
+    /// Prints ` (at file:line)`, or nothing after `show_locations(false)`,
+    /// so a display string can always say `"open raw{location}"`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if locations_shown() {
             write!(f, " (at {}:{})", self.0.file(), self.0.line())

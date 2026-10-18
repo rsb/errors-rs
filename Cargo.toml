@@ -1,6 +1,6 @@
 [package]
 name = "rsb-errors"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Location, toggle and panic capture shared by every rsb Rust crate. See rules/standards/errors.md and panics.md."
 license = "MIT"

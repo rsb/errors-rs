@@ -1,7 +1,9 @@
 # Errors
 
 This crate follows `../../rules/standards/errors.md` and is the home of its
-runtime types: `Loc`, `show_locations` and `locations_shown`.
+runtime types: `Loc`, `show_locations` and `locations_shown`. `Loc` prints
+` (at file:line)` by default; `show_locations(false)` is the off switch.
+The reason is in `README.md`.
 
 **Check.** `cargo test --all-features --test error_line` holds the golden
 lines for both display modes. `cargo clippy` enforces the must-use lints.

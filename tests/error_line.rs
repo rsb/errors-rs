@@ -1,7 +1,8 @@
 //! The golden-line test every rsb crate carries, written against the crate
-//! that defines `Loc`: the default line has no locations, the debug line has
-//! one per layer. One test function, because `show_locations` is process-wide
-//! and integration test files are separate processes.
+//! that defines `Loc`: the default line has one location per layer, the
+//! line after `show_locations(false)` has none and is pinned exactly. One
+//! test function, because `show_locations` is process-wide and integration
+//! test files are separate processes.
 
 use rsb_errors::Loc;
 use snafu::prelude::*;
@@ -32,15 +33,9 @@ fn deepest() -> Result<(), Outer> {
 }
 
 #[test]
-fn one_line_by_default_and_a_location_per_layer_when_shown() {
+fn a_location_per_layer_by_default_and_one_line_when_turned_off() {
     let e = deepest().unwrap_err();
-    assert_eq!(
-        e.to_string(),
-        "open photo: read settings: entity not found",
-        "the approved line"
-    );
-
-    rsb_errors::show_locations(true);
+    assert!(rsb_errors::locations_shown(), "on by default");
     let shown = e.to_string();
     assert_eq!(
         shown.matches(" (at ").count(),
@@ -48,8 +43,19 @@ fn one_line_by_default_and_a_location_per_layer_when_shown() {
         "one location per layer: {shown}"
     );
     assert!(
-        shown.contains("tests/error_line.rs:"),
-        "locations name this file: {shown}"
+        shown.starts_with("open photo (at tests/error_line.rs:"),
+        "the location follows the operation: {shown}"
+    );
+    assert!(
+        shown.ends_with(": entity not found"),
+        "the cause ends the line: {shown}"
+    );
+
+    rsb_errors::show_locations(false);
+    assert_eq!(
+        e.to_string(),
+        "open photo: read settings: entity not found",
+        "the approved line, without locations"
     );
 }
 
