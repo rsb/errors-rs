@@ -13,8 +13,12 @@ behind the `check` feature, the checks their Check sections name.
 - `panic::install`, `panic::take`: a panic hook that records message, file,
   line and column of the last panic, so the dispatcher's `catch_unwind` can
   turn it into an `Internal` error with the location.
-- `check::run` (feature `check`): one line per finding against a repository
-  root, called from each repository's `cargo xtask errors`.
+- `check::run(root: &Path, config: &Config) -> Vec<Finding>` (feature
+  `check`): the checks the three standards name, over every `.rs` and
+  `Cargo.toml` under `root`. `Config` names the dispatcher file, the
+  boundary module and paths to ignore; each `Finding` displays as one line
+  `path:line: rule: what`. Each repository's `cargo xtask errors` calls it
+  and exits 1 on any finding.
 
 ## What a binary writes
 
