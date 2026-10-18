@@ -7,8 +7,23 @@ license = "MIT"
 repository = "https://github.com/rsb/errors-rs"
 publish = false
 
+[features]
+# The repository checks of the standards' Check sections, for each
+# consumer's `cargo xtask errors`. Off by default: a binary never needs it.
+check = []
+
 [dependencies]
 snafu = "0.9"
+
+[[test]]
+name = "check"
+required-features = ["check"]
+
+[profile.release]
+# Ignored when this crate is a dependency; stated because `check` asks it
+# of every root manifest, this one included.
+panic = "unwind"
+overflow-checks = true
 
 [lints.rust]
 unsafe_code = "forbid"
