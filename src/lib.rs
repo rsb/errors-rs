@@ -17,10 +17,15 @@
 //!
 //! `{location}` prints nothing until the binary calls `show_locations(true)`,
 //! after which it prints ` (at file:line)`.
+//!
+//! The `check` feature adds [`check::run`], the repository checks of the
+//! standards' Check sections, for each consumer's `cargo xtask errors`.
 
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+#[cfg(feature = "check")]
+pub mod check;
 pub mod panic;
 
 static SHOW_LOCATIONS: AtomicBool = AtomicBool::new(false);
